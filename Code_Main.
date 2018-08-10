@@ -1,0 +1,433 @@
+#Make the MFA object
+>library('FactoMineR')
+>mca<-read.csv(file="/Users/aneesha/Desktop/Implant.Cytokine.Project/SVM.MCA.csv", header=TRUE, row.names=1)
+>  mca1<-mca[3:22]
+> res.mfa<- MFA(mca1, group=c(3,3,7,1,1,3,1,1), type=c("s","s","s","s","n","n","n","n"), ncp=2, name.group=c("RBL","Time", "Periodontal.status.and.Risk.factors","Bruxism","Augmentation","Implant.type.and.placement","Gender","Biotype"))
+
+>##not used (hcpc)
+mca.clust<-write.csv(hcpc.mfa$data.clust, file="/Users/aneesha/Desktop/Implant.Cytokine.Project/MFA.clust.csv")
+
+## code not described for the two plots- Factors and Correlation circle plot. Figure it out/add later
+> plot.MFA(res.mfa, choix="var",cex=0.75, cex.lab=0.75, lab.grpe=FALSE, autoLab="yes")
+
+>  hcpc.mfa$desc.axes$quanti
+## Check cos2 values
+> res.mfa$quali.var$cos2
+                      Dim.1      Dim.2
+Augmentation    0.707125821 0.03577026
+No.Augmentation 0.707125821 0.03577026
+BL              0.471343291 0.03629412
+TL              0.471343291 0.03629412
+SLA             0.129675341 0.03720943
+SLActive        0.129675341 0.03720943
+Submerged       0.293777028 0.03695660
+Transmucosal    0.293777028 0.03695660
+Thick.or.Medium 0.002746939 0.34293191
+Thin            0.002746939 0.34293191
+Female          0.010276809 0.67583078
+Male            0.010276809 0.67583078
+> res.mfa$quanti.var$cos2
+                                 Dim.1       Dim.2
+RBL.Placement.to.Loading  4.273341e-02 0.031229675
+RBL.Placement.to.Review   3.178744e-02 0.201890056
+RBL.Loading.to.Review     3.660989e-02 0.119406006
+Time.Placement.to.Loading 1.573177e-01 0.003101388
+Time.Placement.to.Review  1.840056e-01 0.237680081
+Time.Loading.to.Review    2.964703e-01 0.236017151
+Age                       7.702582e-03 0.049918046
+PPD                       9.670565e-03 0.018528333
+BOP                       9.144028e-02 0.011894871
+Full.Mouth.Plaque.Score   6.352702e-05 0.019724698
+Diabetes                  2.624403e-02 0.069834077
+Smoking                   2.786368e-02 0.084734454
+History.Periodontitis     8.605549e-02 0.025808426
+Bruxism                   2.436996e-01 0.072546735
+
+
+#Figure 4: Projected MBL
+projected.mbl<-read.csv(file="/Users/aneesha/Desktop/Implant.Cytokine.Project/Projected.MBL2.csv", header=TRUE, row.na
+p25<-ggplot(projected.mbl, aes(y=MBL, x=PATIENT.NO, group=Type))
+> p25<-p25+geom_point(aes(color=Type, alpha=0.8))
+> p25<-p25+theme(legend.position="bottom")
+> p25+geom_smooth(method = lm, se = TRUE, size=0.2, fullrange=TRUE,aes(fill=Type))
+
+## Make the mixed models
+
+> library(lme4)
+> library(mlmRev)
+> library("lmerTest")
+
+## Relevel the factors
+
+> mfa.2$GBR.Sinus.Graft<-relevel(mfa.2$GBR.Sinus.Graft, ref="No.Augmentation")
+> mfa.2$Placement.Type.Submerged.vs.Transmucosal<-relevel(mfa.2$Placement.Type.Submerged.vs.Transmucosal, ref="Transmucosal")
+> mfa.2$Implant.Abutment.Interface.TL.vs.BL<-relevel(mfa.2$Implant.Abutment.Interface.TL.vs.BL, ref="TL")
+
+## Mixed Model for RBL Placement Loading
+
+> mixedmod2<-lmer(formula = RBL.Placement.to.Loading ~ Time.Placement.to.Loading + Implant.Abutment.Interface.TL.vs.BL + GBR.Sinus.Graft + Placement.Type.Submerged.vs.Transmucosal +  Bruxism +(1| NAME), data = mfa.2)
+> summary(mixedmod2)
+Linear mixed model fit by REML t-tests use Satterthwaite
+  approximations to degrees of freedom [merModLmerTest]
+Formula: 
+RBL.Placement.to.Loading ~ Time.Placement.to.Loading + Implant.Abutment.Interface.TL.vs.BL +  
+    GBR.Sinus.Graft + Placement.Type.Submerged.vs.Transmucosal +  
+    Bruxism + (1 | NAME)
+   Data: mfa.2
+
+REML criterion at convergence: 615
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.4029 -0.5002 -0.1141  0.3745  3.8117 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ NAME     (Intercept) 0.390    0.6245  
+ Residual             2.745    1.6568  
+Number of obs: 156, groups:  NAME, 87
+
+Fixed effects:
+                                                   Estimate
+(Intercept)                                         2.09722
+Time.Placement.to.Loading                          -0.70348
+Implant.Abutment.Interface.TL.vs.BLBL              -0.41860
+GBR.Sinus.GraftAugmentation                        -0.61985
+Placement.Type.Submerged.vs.TransmucosalSubmerged  -0.05847
+Bruxism                                             0.11027
+                                                  Std. Error
+(Intercept)                                          0.28658
+Time.Placement.to.Loading                            0.36993
+Implant.Abutment.Interface.TL.vs.BLBL                0.48625
+GBR.Sinus.GraftAugmentation                          0.32128
+Placement.Type.Submerged.vs.TransmucosalSubmerged    0.67535
+Bruxism                                              0.40852
+                                                         df t value
+(Intercept)                                        70.88000   7.318
+Time.Placement.to.Loading                         129.07000  -1.902
+Implant.Abutment.Interface.TL.vs.BLBL              31.36000  -0.861
+GBR.Sinus.GraftAugmentation                        54.20000  -1.929
+Placement.Type.Submerged.vs.TransmucosalSubmerged  47.73000  -0.087
+Bruxism                                            50.81000   0.270
+                                                  Pr(>|t|)    
+(Intercept)                                       3.08e-10 ***
+Time.Placement.to.Loading                           0.0594 .  
+Implant.Abutment.Interface.TL.vs.BLBL               0.3958    
+GBR.Sinus.GraftAugmentation                         0.0589 .  
+Placement.Type.Submerged.vs.TransmucosalSubmerged   0.9314    
+Bruxism                                             0.7883    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) T.P..L I.A.I. GBR.S. P.T.S.
+Tm.Plcmn..L -0.600                            
+I.A.I.TL..B -0.047 -0.157                     
+GBR.Sns.GrA -0.441 -0.079 -0.038              
+Plc.T.S..TS  0.072 -0.074 -0.540 -0.131       
+Bruxism     -0.122  0.018 -0.095 -0.237  0.107
+
+> AIC(mixedmod2)
+[1] 631.0065
+
+## Model RBL Placement to Review
+
+> mixedmod.3<-lmer(formula = RBL.Placement.to.Review ~ Time.Placement.to.Loading +Time.Placement.to.Review+Implant.Abutment.Interface.TL.vs.BL + GBR.Sinus.Graft + Placement.Type.Submerged.vs.Transmucosal + Bruxism +(1| NAME), data = mca)
+> summary(mixedmod3)
+Linear mixed model fit by REML t-tests use Satterthwaite approximations
+  to degrees of freedom [merModLmerTest]
+Formula: 
+RBL.Placement.to.Review ~ Time.Placement.to.Loading + Time.Placement.to.Review +  
+    Implant.Abutment.Interface.TL.vs.BL + GBR.Sinus.Graft + Placement.Type.Submerged.vs.Transmucosal +  
+    Bruxism + (1 | NAME)
+   Data: mca
+
+REML criterion at convergence: 39.1
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-2.5100 -0.5426 -0.1145  0.4282  3.3760 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ NAME     (Intercept) 0.0280   0.1673  
+ Residual             0.0434   0.2083  
+Number of obs: 156, groups:  NAME, 87
+
+Fixed effects:
+                                                       Estimate
+(Intercept)                                           3.481e-01
+Time.Placement.to.Loading                             1.178e-01
+Time.Placement.to.Review                             -7.362e-02
+Implant.Abutment.Interface.TL.vs.BLTL                 8.269e-02
+GBR.Sinus.GraftNo.Augmentation                        4.406e-03
+Placement.Type.Submerged.vs.TransmucosalTransmucosal  5.033e-02
+Bruxism                                               1.644e-04
+                                                     Std. Error
+(Intercept)                                           1.197e-01
+Time.Placement.to.Loading                             5.545e-02
+Time.Placement.to.Review                              2.114e-02
+Implant.Abutment.Interface.TL.vs.BLTL                 8.578e-02
+GBR.Sinus.GraftNo.Augmentation                        5.458e-02
+Placement.Type.Submerged.vs.TransmucosalTransmucosal  1.134e-01
+Bruxism                                               6.836e-02
+                                                             df t value
+(Intercept)                                           1.108e+02   2.908
+Time.Placement.to.Loading                             1.486e+02   2.125
+Time.Placement.to.Review                              1.118e+02  -3.483
+Implant.Abutment.Interface.TL.vs.BLTL                 6.932e+01   0.964
+GBR.Sinus.GraftNo.Augmentation                        7.950e+01   0.081
+Placement.Type.Submerged.vs.TransmucosalTransmucosal  8.098e+01   0.444
+Bruxism                                               7.811e+01   0.002
+                                                     Pr(>|t|)    
+(Intercept)                                           0.00440 ** 
+Time.Placement.to.Loading                             0.03527 *  
+Time.Placement.to.Review                              0.00071 ***
+Implant.Abutment.Interface.TL.vs.BLTL                 0.33838    
+GBR.Sinus.GraftNo.Augmentation                        0.93586    
+Placement.Type.Submerged.vs.TransmucosalTransmucosal  0.65824    
+Bruxism                                               0.99809    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) T.P..L T.P..R I.A.I. GBR.S. P.T.S.
+Tm.Plcmn..L -0.302                                   
+Tm.Plcmn..R -0.547 -0.186                            
+I.A.I.TL..B  0.004  0.171 -0.231                     
+GBR.Sn.GN.A  0.015  0.102 -0.213 -0.022              
+Plc.T.S..TT -0.599  0.054  0.143 -0.567 -0.138       
+Bruxism     -0.045  0.057 -0.128  0.095  0.236 -0.107
+
+
+> ## Model Loading to Review
+
+> mixedmod.4<-lmer(formula = RBL.Loading.to.Review ~ Time.Loading.to.Review+Implant.Abutment.Interface.TL.vs.BL + GBR.Sinus.Graft + Placement.Type.Submerged.vs.Transmucosal + Bruxism +(1| NAME), data = mca)
+> summary(mixedmod.4)
+Linear mixed model fit by REML t-tests use Satterthwaite approximations
+  to degrees of freedom [merModLmerTest]
+Formula: 
+RBL.Loading.to.Review ~ Time.Loading.to.Review + Implant.Abutment.Interface.TL.vs.BL +  
+    GBR.Sinus.Graft + Placement.Type.Submerged.vs.Transmucosal +  
+    Bruxism + (1 | NAME)
+   Data: mca
+
+REML criterion at convergence: 62.1
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-6.4568 -0.3003 -0.0266  0.2822  5.0195 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ NAME     (Intercept) 0.004075 0.06384 
+ Residual             0.072594 0.26943 
+Number of obs: 156, groups:  NAME, 87
+
+Fixed effects:
+                                                     Estimate Std. Error
+(Intercept)                                           0.18394    0.09718
+Time.Loading.to.Review                               -0.04265    0.02008
+Implant.Abutment.Interface.TL.vs.BLTL                -0.04937    0.07328
+GBR.Sinus.GraftNo.Augmentation                       -0.01104    0.05010
+Placement.Type.Submerged.vs.TransmucosalTransmucosal  0.10038    0.10215
+Bruxism                                              -0.02197    0.06184
+                                                           df t value
+(Intercept)                                          74.91000   1.893
+Time.Loading.to.Review                               90.95000  -2.124
+Implant.Abutment.Interface.TL.vs.BLTL                28.18000  -0.674
+GBR.Sinus.GraftNo.Augmentation                       65.13000  -0.220
+Placement.Type.Submerged.vs.TransmucosalTransmucosal 49.26000   0.983
+Bruxism                                              52.82000  -0.355
+                                                     Pr(>|t|)  
+(Intercept)                                            0.0622 .
+Time.Loading.to.Review                                 0.0364 *
+Implant.Abutment.Interface.TL.vs.BLTL                  0.5060  
+GBR.Sinus.GraftNo.Augmentation                         0.8263  
+Placement.Type.Submerged.vs.TransmucosalTransmucosal   0.3306  
+Bruxism                                                0.7238  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) T.L..R I.A.I. GBR.S. P.T.S.
+Tm.Ldng.t.R -0.560                            
+I.A.I.TL..B  0.078 -0.254                     
+GBR.Sn.GN.A  0.049 -0.259  0.031              
+Plc.T.S..TT -0.650  0.134 -0.563 -0.177       
+Bruxism     -0.069 -0.096  0.126  0.264 -0.130
+
+## Model AICs
+Placement to loading
+631.0065
+Placement to Review
+57.06439
+Loading to Review
+78.10837
+
+## Compare models to null models with random intercept only
+Placement to Loading
+
+> mixedmod.2.null<-lmer(formula = RBL.Placement.to.Loading ~ 1 +(1| NAME), data = mca)
+> anova(mixedmod.2.null, mixedmod.2)
+refitting model(s) with ML (instead of REML)
+Data: mca
+Models:
+object: RBL.Placement.to.Loading ~ 1 + (1 | NAME)
+..1: RBL.Placement.to.Loading ~ Time.Placement.to.Loading + Implant.Abutment.Interface.TL.vs.BL + 
+..1:     GBR.Sinus.Graft + Placement.Type.Submerged.vs.Transmucosal + 
+..1:     Bruxism + (1 | NAME)
+       Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)  
+object  3 631.40 640.55 -312.70   625.40                           
+..1     8 629.11 653.51 -306.56   613.11 12.282      5    0.03112 *
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+## Placement to Review
+
+> mixedmod.3.null<-lmer(formula = RBL.Placement.to.Review ~ 1 +(1| NAME), data = mca)
+> anova(mixedmod.3.null, mixedmod.3)
+refitting model(s) with ML (instead of REML)
+Data: mca
+Models:
+object: RBL.Placement.to.Review ~ 1 + (1 | NAME)
+..1: RBL.Placement.to.Review ~ Time.Placement.to.Loading + Time.Placement.to.Review + 
+..1:     Implant.Abutment.Interface.TL.vs.BL + GBR.Sinus.Graft + Placement.Type.Submerged.vs.Transmucosal + 
+..1:     Bruxism + (1 | NAME)
+       Df    AIC    BIC   logLik deviance  Chisq Chi Df Pr(>Chisq)  
+object  3 31.497 40.646 -12.7484  25.4968                           
+..1     9 27.664 55.113  -4.8321   9.6643 15.832      6    0.01468 *
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+## Loading to Review
+> mixedmod.4.null<-lmer(formula = RBL.Loading.to.Review ~ 1 +(1| NAME), data = mca)
+> anova(mixedmod.4.null, mixedmod.4)
+refitting model(s) with ML (instead of REML)
+Data: mca
+Models:
+object: RBL.Loading.to.Review ~ 1 + (1 | NAME)
+..1: RBL.Loading.to.Review ~ Time.Loading.to.Review + Implant.Abutment.Interface.TL.vs.BL + 
+..1:     GBR.Sinus.Graft + Placement.Type.Submerged.vs.Transmucosal + 
+..1:     Bruxism + (1 | NAME)
+       Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)
+object  3 48.889 58.038 -21.444   42.889                         
+..1     8 51.428 75.826 -17.714   35.428 7.4613      5     0.1885
+
+## Histogram (figure 1)
+
+>  hist<-read.csv(file="/Users/aneesha/Desktop/Implant.Cytokine.Project/hist.time.csv", header=TRUE)
+> str(hist)
+'data.frame':	156 obs. of  5 variables:
+ $ Implant                          : int  64 122 48 16 36 50 73 89 111 130 ...
+ $ Time.Placement.to.Loading        : num  0.5 0.5 0.08 0.17 0.17 0.17 0.17 0.17 0.17 0.17 ...
+ $ Time.Placement.to.Loading.months.: num  1 1 1 2.04 2.04 2.04 2.04 2.04 2.04 2.04 ...
+ $ Time.Placement.to.Review         : num  2.58 1.58 3.17 1.83 5.17 4.17 4.83 3.92 2.83 3.67 ...
+ $ Time.Loading.to.Review           : num  3.08 2.08 3.08 1.67 5 4 4.67 3.75 2.67 3.5 ...
+h1<-ggplot(data=hist, aes(hist$Time.Placement.to.Loading.months))
+> h1+geom_histogram(bins=25, binwidth=0.4, color="black", fill="grey")+xlab("Time from Placement to Loading (months)")+scale_x_continuous(breaks=seq(0,30,3))+ylim(c(0,36))+scale_y_continuous(breaks=seq(0,36,3))
+
+h2<-ggplot(data=hist, aes(hist$Loading.to.Review))
+h2+geom_histogram(binwidth=0.06, color="black", fill="grey")+xlab("Time from Loading to Review (years)")+scale_x_continuous(breaks=seq(0,8,1))+ylim(c(0,10))+scale_y_continuous(breaks=seq(0,10,1))
+
+
+## Confidence intervals of the random intercept
+RBL Placement to Loading
+> confint.merMod(mixedmod.2, oldNames=FALSE, method="boot", nsim=500)
+Computing bootstrap confidence intervals ...
+                                                           2.5 %
+sd_(Intercept)|NAME                                   0.00000000
+sigma                                                 1.36908733
+(Intercept)                                          -0.23906307
+Time.Placement.to.Loading                            -1.40397523
+Implant.Abutment.Interface.TL.vs.BLTL                -0.45926922
+GBR.Sinus.GraftNo.Augmentation                       -0.04816107
+Placement.Type.Submerged.vs.TransmucosalTransmucosal -1.25124179
+Bruxism                                              -0.65763198
+                                                         97.5 %
+sd_(Intercept)|NAME                                  1.07249050
+sigma                                                1.90113801
+(Intercept)                                          2.10882295
+Time.Placement.to.Loading                            0.02884313
+Implant.Abutment.Interface.TL.vs.BLTL                1.45167297
+GBR.Sinus.GraftNo.Augmentation                       1.22690833
+Placement.Type.Submerged.vs.TransmucosalTransmucosal 1.30639918
+Bruxism                                              0.85042427
+
+## Confint for RBL Placement to Review
+> confint.merMod(mixedmod.3, oldNames=FALSE, method="boot", nsim=500)
+Computing bootstrap confidence intervals ...
+                                                           2.5 %
+sd_(Intercept)|NAME                                   0.10035215
+sigma                                                 0.17433629
+(Intercept)                                           0.09744162
+Time.Placement.to.Loading                             0.01348184
+Time.Placement.to.Review                             -0.11085279
+Implant.Abutment.Interface.TL.vs.BLTL                -0.10438799
+GBR.Sinus.GraftNo.Augmentation                       -0.09973834
+Placement.Type.Submerged.vs.TransmucosalTransmucosal -0.16869460
+Bruxism                                              -0.14410765
+                                                          97.5 %
+sd_(Intercept)|NAME                                   0.21962370
+sigma                                                 0.24182798
+(Intercept)                                           0.56314398
+Time.Placement.to.Loading                             0.23523308
+Time.Placement.to.Review                             -0.03266627
+Implant.Abutment.Interface.TL.vs.BLTL                 0.26475036
+GBR.Sinus.GraftNo.Augmentation                        0.11067857
+Placement.Type.Submerged.vs.TransmucosalTransmucosal  0.28269815
+Bruxism                                               0.14594799
+
+## Confint for RBL Loading to Review
+> confint.merMod(mixedmod.4, oldNames=FALSE, method="boot", nsim=500)
+Computing bootstrap confidence intervals ...
+                                                            2.5 %
+sd_(Intercept)|NAME                                   0.000000000
+sigma                                                 0.227661462
+(Intercept)                                          -0.005115966
+Time.Loading.to.Review                               -0.086385171
+Implant.Abutment.Interface.TL.vs.BLTL                -0.173839075
+GBR.Sinus.GraftNo.Augmentation                       -0.112248284
+Placement.Type.Submerged.vs.TransmucosalTransmucosal -0.074122277
+Bruxism                                              -0.136680443
+                                                           97.5 %
+sd_(Intercept)|NAME                                   0.149359246
+sigma                                                 0.299245270
+(Intercept)                                           0.359860263
+Time.Loading.to.Review                               -0.002986685
+Implant.Abutment.Interface.TL.vs.BLTL                 0.097437466
+GBR.Sinus.GraftNo.Augmentation                        0.089936701
+Placement.Type.Submerged.vs.TransmucosalTransmucosal  0.301603069
+Bruxism                                               0.100591275
+
+## ICC for examiners
+> cali<-read.csv(file="/Users/aneesha/Desktop/Implant.Cytokine.Project/Calibration.csv", heade=TRUE, row.names=1)
+> str(cali)
+'data.frame':	69 obs. of  2 variables:
+ $ Fan: num  4.73 4.84 5.23 1.69 1.77 1.69 6.67 5.52 5.65 5.06 ...
+ $ Ng : num  4.89 4.91 5.17 1.77 1.82 1.66 6.56 5.5 5.7 5.1 ...
+> library('irr')
+Loading required package: lpSolve
+> icc<-icc(cali, model="twoway", type="agreement")
+> icc
+ Single Score Intraclass Correlation
+
+   Model: twoway 
+   Type : agreement 
+
+   Subjects = 69 
+     Raters = 2 
+   ICC(A,1) = 0.993
+
+ F-Test, H0: r0 = 0 ; H1: r0 > 0 
+ F(68,66.7) = 276 , p = 1.35e-63 
+
+ 95%-Confidence Interval for ICC Population Values:
+  0.988 < ICC < 0.995
+
+## Correlation Time vs RBL Figure
+
+>lin.imp2<read.csv(file="/Users/aneesha/Desktop/Implant.Cytokine.Project/line.imp.rate.@me.csv",Bheader=TRUE)
+>p1<qplot(x=Time,y=Rate.of.bone.loss,facets=~Group,data=lin.imp2)+
++geom_smooth(methodB=B"lm")+labs(x="Time(years)",By="RateBofBboneBloss(mm/year)")
+>p1+geom_point(colour="black",shape=21,posi@on="jitter", fill="white")
