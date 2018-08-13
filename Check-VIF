@@ -1,0 +1,532 @@
+> lmbop<-glm(bopcat~Implant.Abutment.Interface.TL.vs.BL+GBR.Sinus.Graft+Placement.Type.Submerged.vs.Transmucosal+Bruxism+Full.Mouth.Plaque.Score+Age+PPD+History.Periodontitis+Biotype+Gender.Female.vs.Male, data=mca, family=binomial)
+> summary(lmbop)
+
+Call:
+glm(formula = bopcat ~ Implant.Abutment.Interface.TL.vs.BL + 
+    GBR.Sinus.Graft + Placement.Type.Submerged.vs.Transmucosal + 
+    Bruxism + Full.Mouth.Plaque.Score + Age + PPD + History.Periodontitis + 
+    Biotype + Gender.Female.vs.Male, family = binomial, data = mca)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-2.2612  -0.9139  -0.3540   0.9640   1.9935  
+
+Coefficients:
+                                                   Estimate Std. Error
+(Intercept)                                       -1.282006   1.442067
+Implant.Abutment.Interface.TL.vs.BLTL             -0.830792   0.646170
+GBR.Sinus.GraftAugmentation                       -0.655666   0.394755
+Placement.Type.Submerged.vs.TransmucosalSubmerged -1.865359   1.068712
+Bruxism                                           -1.752582   0.617492
+Full.Mouth.Plaque.Score                            0.013380   0.006903
+Age                                                0.006125   0.018146
+PPD                                                0.244665   0.221251
+History.Periodontitis                              0.596566   0.426190
+BiotypeThin                                        1.786144   0.549524
+Gender.Female.vs.MaleMale                          0.534648   0.404317
+                                                  z value Pr(>|z|)   
+(Intercept)                                        -0.889  0.37400   
+Implant.Abutment.Interface.TL.vs.BLTL              -1.286  0.19854   
+GBR.Sinus.GraftAugmentation                        -1.661  0.09673 . 
+Placement.Type.Submerged.vs.TransmucosalSubmerged  -1.745  0.08091 . 
+Bruxism                                            -2.838  0.00454 **
+Full.Mouth.Plaque.Score                             1.938  0.05258 . 
+Age                                                 0.338  0.73569   
+PPD                                                 1.106  0.26880   
+History.Periodontitis                               1.400  0.16158   
+BiotypeThin                                         3.250  0.00115 **
+Gender.Female.vs.MaleMale                           1.322  0.18605   
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 214.62  on 155  degrees of freedom
+Residual deviance: 173.00  on 145  degrees of freedom
+AIC: 195
+
+Number of Fisher Scoring iterations: 4
+
+> library(car)
+> vif(lmbop)
+     Implant.Abutment.Interface.TL.vs.BL 
+                                1.824899 
+                         GBR.Sinus.Graft 
+                                1.143159 
+Placement.Type.Submerged.vs.Transmucosal 
+                                1.994871 
+                                 Bruxism 
+                                1.100185 
+                 Full.Mouth.Plaque.Score 
+                                1.098231 
+                                     Age 
+                                1.254280 
+                                     PPD 
+                                1.328274 
+                   History.Periodontitis 
+                                1.321523 
+                                 Biotype 
+                                1.247662 
+                   Gender.Female.vs.Male 
+                                1.113128 
+> lm.rbl.pl<-glm(RBL.Placement.to.Loading~Time.Placement.to.Loading+BOP+Diabetes+Smoking+Implant.Abutment.Interface.TL.vs.BL+GBR.Sinus.Graft+Placement.Type.Submerged.vs.Transmucosal+Type.of.Implant.Surface.SLActive.vs.SLA+Bruxism+Full.Mouth.Plaque.Score+Age+PPD+History.Periodontitis+Biotype+Gender.Female.vs.Male, data=mca)
+> vif(lm.rbl.pl)
+               Time.Placement.to.Loading 
+                                1.401052 
+                                     BOP 
+                                1.232893 
+                                Diabetes 
+                                1.217853 
+                                 Smoking 
+                                1.228852 
+     Implant.Abutment.Interface.TL.vs.BL 
+                                2.110902 
+                         GBR.Sinus.Graft 
+                                1.250837 
+Placement.Type.Submerged.vs.Transmucosal 
+                                2.252859 
+ Type.of.Implant.Surface.SLActive.vs.SLA 
+                                1.369750 
+                                 Bruxism 
+                                1.252570 
+                 Full.Mouth.Plaque.Score 
+                                1.140033 
+                                     Age 
+                                1.476375 
+                                     PPD 
+                                1.325267 
+                   History.Periodontitis 
+                                1.408656 
+                                 Biotype 
+                                1.254252 
+                   Gender.Female.vs.Male 
+                                1.415984 
+> lmer.rbl.pl<-lmer(RBL.Placement.to.Loading~Time.Placement.to.Loading+BOP+Diabetes+Smoking+GBR.Sinus.Graft+Type.of.Implant.Surface.SLActive.vs.SLA+Bruxism+Full.Mouth.Plaque.Score+Age+PPD+History.Periodontitis+Biotype+Gender.Female.vs.Male+ (1|NAME),data=mca, REML=F)
+> summary(lmer.rbl.pl)
+Linear mixed model fit by maximum likelihood t-tests use Satterthwaite
+  approximations to degrees of freedom [merModLmerTest]
+Formula: RBL.Placement.to.Loading ~ Time.Placement.to.Loading + BOP +  
+    Diabetes + Smoking + GBR.Sinus.Graft + Type.of.Implant.Surface.SLActive.vs.SLA +  
+    Bruxism + Full.Mouth.Plaque.Score + Age + PPD + History.Periodontitis +  
+    Biotype + Gender.Female.vs.Male + (1 | NAME)
+   Data: mca
+
+     AIC      BIC   logLik deviance df.resid 
+   632.1    680.9   -300.1    600.1      140 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.4785 -0.6445 -0.0720  0.3999  4.0454 
+
+Random effects:
+ Groups   Name        Variance  Std.Dev. 
+ NAME     (Intercept) 9.788e-15 9.893e-08
+ Residual             2.743e+00 1.656e+00
+Number of obs: 156, groups:  NAME, 87
+
+Fixed effects:
+                                                  Estimate Std. Error
+(Intercept)                                       4.424743   0.797176
+Time.Placement.to.Loading                        -0.661916   0.379858
+BOP                                              -0.209744   0.349470
+Diabetes                                         -0.468234   0.593445
+Smoking                                           0.537369   0.589590
+GBR.Sinus.GraftAugmentation                      -0.803668   0.288334
+Type.of.Implant.Surface.SLActive.vs.SLASLActive  -0.217125   0.964265
+Bruxism                                           0.063924   0.369671
+Full.Mouth.Plaque.Score                          -0.002669   0.004039
+Age                                              -0.022866   0.011930
+PPD                                              -0.255365   0.150716
+History.Periodontitis                            -0.260155   0.300019
+BiotypeThin                                      -0.255766   0.378323
+Gender.Female.vs.MaleMale                         0.209622   0.322897
+                                                        df t value
+(Intercept)                                     156.000000   5.551
+Time.Placement.to.Loading                       156.000000  -1.743
+BOP                                             156.000000  -0.600
+Diabetes                                        156.000000  -0.789
+Smoking                                         156.000000   0.911
+GBR.Sinus.GraftAugmentation                     156.000000  -2.787
+Type.of.Implant.Surface.SLActive.vs.SLASLActive 156.000000  -0.225
+Bruxism                                         156.000000   0.173
+Full.Mouth.Plaque.Score                         156.000000  -0.661
+Age                                             156.000000  -1.917
+PPD                                             156.000000  -1.694
+History.Periodontitis                           156.000000  -0.867
+BiotypeThin                                     156.000000  -0.676
+Gender.Female.vs.MaleMale                       156.000000   0.649
+                                                Pr(>|t|)    
+(Intercept)                                      1.2e-07 ***
+Time.Placement.to.Loading                        0.08339 .  
+BOP                                              0.54926    
+Diabetes                                         0.43130    
+Smoking                                          0.36348    
+GBR.Sinus.GraftAugmentation                      0.00598 ** 
+Type.of.Implant.Surface.SLActive.vs.SLASLActive  0.82214    
+Bruxism                                          0.86294    
+Full.Mouth.Plaque.Score                          0.50977    
+Age                                              0.05712 .  
+PPD                                              0.09219 .  
+History.Periodontitis                            0.38720    
+BiotypeThin                                      0.50001    
+Gender.Female.vs.MaleMale                        0.51717    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) T.P..L BOP    Diabts Smokng GBR.S. T..I.S Bruxsm
+Tm.Plcmn..L -0.085                                                 
+BOP         -0.064 -0.037                                          
+Diabetes     0.007  0.116 -0.091                                   
+Smoking     -0.113  0.147 -0.088  0.167                            
+GBR.Sns.GrA -0.202 -0.177  0.091  0.052 -0.074                     
+T..I.S.SLA. -0.043 -0.421  0.067  0.037 -0.017  0.112              
+Bruxism     -0.129  0.031  0.183 -0.071  0.084 -0.237 -0.121       
+Fll.Mth.P.S -0.205  0.020 -0.220 -0.026  0.123  0.058 -0.064 -0.111
+Age         -0.718 -0.093 -0.004  0.051  0.145 -0.030  0.171  0.072
+PPD         -0.436 -0.036 -0.018 -0.078 -0.088  0.072 -0.012  0.020
+Hstry.Prdnt  0.034 -0.071 -0.095 -0.099 -0.126  0.130 -0.014  0.001
+BiotypeThin -0.060 -0.079 -0.263 -0.078  0.069 -0.031 -0.128  0.003
+Gndr.Fm..MM  0.009 -0.184 -0.015 -0.353 -0.268  0.073 -0.049  0.050
+            F.M.P. Age    PPD    Hstr.P BtypTh
+Tm.Plcmn..L                                   
+BOP                                           
+Diabetes                                      
+Smoking                                       
+GBR.Sns.GrA                                   
+T..I.S.SLA.                                   
+Bruxism                                       
+Fll.Mth.P.S                                   
+Age          0.002                            
+PPD         -0.032 -0.078                     
+Hstry.Prdnt  0.110 -0.129 -0.303              
+BiotypeThin  0.160 -0.063  0.003  0.157       
+Gndr.Fm..MM -0.040 -0.207  0.077  0.156  0.204
+> lm.pl<-lm(RBL.Placement.to.Loading~Time.Placement.to.Loading+BOP+Diabetes+Smoking+GBR.Sinus.Graft+Type.of.Implant.Surface.SLActive.vs.SLA+Bruxism+Full.Mouth.Plaque.Score+Age+PPD+History.Periodontitis+Biotype+Gender.Female.vs.Male,data=mca)
+> summary(lm.pl)
+
+Call:
+lm(formula = RBL.Placement.to.Loading ~ Time.Placement.to.Loading + 
+    BOP + Diabetes + Smoking + GBR.Sinus.Graft + Type.of.Implant.Surface.SLActive.vs.SLA + 
+    Bruxism + Full.Mouth.Plaque.Score + Age + PPD + History.Periodontitis + 
+    Biotype + Gender.Female.vs.Male, data = mca)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-5.7610 -1.0674 -0.1193  0.6624  6.6999 
+
+Coefficients:
+                                                 Estimate Std. Error
+(Intercept)                                      4.424743   0.835550
+Time.Placement.to.Loading                       -0.661916   0.398143
+BOP                                             -0.209744   0.366293
+Diabetes                                        -0.468234   0.622012
+Smoking                                          0.537369   0.617971
+GBR.Sinus.GraftAugmentation                     -0.803668   0.302214
+Type.of.Implant.Surface.SLActive.vs.SLASLActive -0.217125   1.010682
+Bruxism                                          0.063924   0.387465
+Full.Mouth.Plaque.Score                         -0.002669   0.004233
+Age                                             -0.022866   0.012505
+PPD                                             -0.255365   0.157971
+History.Periodontitis                           -0.260155   0.314461
+BiotypeThin                                     -0.255766   0.396534
+Gender.Female.vs.MaleMale                        0.209622   0.338441
+                                                t value Pr(>|t|)    
+(Intercept)                                       5.296 4.42e-07 ***
+Time.Placement.to.Loading                        -1.663  0.09862 .  
+BOP                                              -0.573  0.56781    
+Diabetes                                         -0.753  0.45283    
+Smoking                                           0.870  0.38600    
+GBR.Sinus.GraftAugmentation                      -2.659  0.00873 ** 
+Type.of.Implant.Surface.SLActive.vs.SLASLActive  -0.215  0.83021    
+Bruxism                                           0.165  0.86919    
+Full.Mouth.Plaque.Score                          -0.630  0.52946    
+Age                                              -1.829  0.06956 .  
+PPD                                              -1.617  0.10820    
+History.Periodontitis                            -0.827  0.40945    
+BiotypeThin                                      -0.645  0.51996    
+Gender.Female.vs.MaleMale                         0.619  0.53666    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 1.736 on 142 degrees of freedom
+Multiple R-squared:  0.1545,	Adjusted R-squared:  0.0771 
+F-statistic: 1.996 on 13 and 142 DF,  p-value: 0.025
+
+> lm.rbl.lr<-glm(RBL.Loading.to.Review~Time.Loading.to.Review+BOP+Diabetes+Smoking+Implant.Abutment.Interface.TL.vs.BL+GBR.Sinus.Graft+Placement.Type.Submerged.vs.Transmucosal+Type.of.Implant.Surface.SLActive.vs.SLA+Bruxism+Full.Mouth.Plaque.Score+Age+PPD+History.Periodontitis+Biotype+Gender.Female.vs.Male, data=mca)
+> vif(lm.rbl.lr)
+                  Time.Loading.to.Review 
+                                1.307568 
+                                     BOP 
+                                1.239668 
+                                Diabetes 
+                                1.219714 
+                                 Smoking 
+                                1.218935 
+     Implant.Abutment.Interface.TL.vs.BL 
+                                2.191169 
+                         GBR.Sinus.Graft 
+                                1.387135 
+Placement.Type.Submerged.vs.Transmucosal 
+                                2.322727 
+ Type.of.Implant.Surface.SLActive.vs.SLA 
+                                1.155377 
+                                 Bruxism 
+                                1.260194 
+                 Full.Mouth.Plaque.Score 
+                                1.153589 
+                                     Age 
+                                1.495400 
+                                     PPD 
+                                1.348559 
+                   History.Periodontitis 
+                                1.423543 
+                                 Biotype 
+                                1.240166 
+                   Gender.Female.vs.Male 
+                                1.441882 
+> lmer.rbl.pl<-lmer(RBL.Loading.to.Review~Time.Loading.to.Review+BOP+Diabetes+Smoking+GBR.Sinus.Graft+Type.of.Implant.Surface.SLActive.vs.SLA+Bruxism+Full.Mouth.Plaque.Score+Age+PPD+History.Periodontitis+Biotype+Gender.Female.vs.Male+ (1|NAME),data=mca, REML=F)
+> summary(lmer.rbl.pl)
+Linear mixed model fit by maximum likelihood t-tests use Satterthwaite
+  approximations to degrees of freedom [merModLmerTest]
+Formula: 
+RBL.Loading.to.Review ~ Time.Loading.to.Review + BOP + Diabetes +  
+    Smoking + GBR.Sinus.Graft + Type.of.Implant.Surface.SLActive.vs.SLA +  
+    Bruxism + Full.Mouth.Plaque.Score + Age + PPD + History.Periodontitis +  
+    Biotype + Gender.Female.vs.Male + (1 | NAME)
+   Data: mca
+
+     AIC      BIC   logLik deviance df.resid 
+    61.7    110.5    -14.9     29.7      140 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-6.5926 -0.3245 -0.0405  0.3449  4.9960 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ NAME     (Intercept) 0.00000  0.0000  
+ Residual             0.07084  0.2662  
+Number of obs: 156, groups:  NAME, 87
+
+Fixed effects:
+                                                  Estimate Std. Error
+(Intercept)                                      2.772e-01  1.549e-01
+Time.Loading.to.Review                          -5.259e-02  1.958e-02
+BOP                                             -8.627e-02  5.643e-02
+Diabetes                                         1.384e-01  9.544e-02
+Smoking                                          6.025e-02  9.407e-02
+GBR.Sinus.GraftAugmentation                     -1.167e-02  4.839e-02
+Type.of.Implant.Surface.SLActive.vs.SLASLActive -4.841e-02  1.407e-01
+Bruxism                                         -1.500e-02  5.942e-02
+Full.Mouth.Plaque.Score                         -3.967e-04  6.531e-04
+Age                                              1.373e-03  1.910e-03
+PPD                                             -1.827e-02  2.446e-02
+History.Periodontitis                            1.012e-02  4.828e-02
+BiotypeThin                                     -1.381e-02  6.070e-02
+Gender.Female.vs.MaleMale                        4.603e-03  5.255e-02
+                                                        df t value
+(Intercept)                                      1.560e+02   1.790
+Time.Loading.to.Review                           1.560e+02  -2.686
+BOP                                              1.560e+02  -1.529
+Diabetes                                         1.560e+02   1.450
+Smoking                                          1.560e+02   0.640
+GBR.Sinus.GraftAugmentation                      1.560e+02  -0.241
+Type.of.Implant.Surface.SLActive.vs.SLASLActive  1.560e+02  -0.344
+Bruxism                                          1.560e+02  -0.252
+Full.Mouth.Plaque.Score                          1.560e+02  -0.607
+Age                                              1.560e+02   0.719
+PPD                                              1.560e+02  -0.747
+History.Periodontitis                            1.560e+02   0.210
+BiotypeThin                                      1.560e+02  -0.227
+Gender.Female.vs.MaleMale                        1.560e+02   0.088
+                                                Pr(>|t|)   
+(Intercept)                                      0.07546 . 
+Time.Loading.to.Review                           0.00801 **
+BOP                                              0.12831   
+Diabetes                                         0.14904   
+Smoking                                          0.52282   
+GBR.Sinus.GraftAugmentation                      0.80978   
+Type.of.Implant.Surface.SLActive.vs.SLASLActive  0.73121   
+Bruxism                                          0.80099   
+Full.Mouth.Plaque.Score                          0.54451   
+Age                                              0.47330   
+PPD                                              0.45618   
+History.Periodontitis                            0.83424   
+BiotypeThin                                      0.82037   
+Gender.Female.vs.MaleMale                        0.93030   
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) T.L..R BOP    Diabts Smokng GBR.S. T..I.S Bruxsm
+Tm.Ldng.t.R -0.566                                                 
+BOP         -0.114  0.104                                          
+Diabetes     0.084 -0.123 -0.099                                   
+Smoking     -0.035 -0.087 -0.092  0.161                            
+GBR.Sns.GrA -0.361  0.334  0.115  0.029 -0.075                     
+T..I.S.SLA. -0.097  0.044  0.060  0.089  0.046  0.054              
+Bruxism     -0.084 -0.036  0.180 -0.070  0.083 -0.234 -0.120       
+Fll.Mth.P.S -0.231  0.113 -0.205 -0.041  0.111  0.096 -0.056 -0.115
+Age         -0.584 -0.033 -0.010  0.066  0.164 -0.056  0.145  0.077
+PPD         -0.442  0.144 -0.004 -0.091 -0.095  0.110 -0.024  0.016
+Hstry.Prdnt -0.027  0.088 -0.087 -0.102 -0.124  0.141 -0.045  0.000
+BiotypeThin -0.023 -0.056 -0.271 -0.062  0.086 -0.062 -0.181  0.007
+Gndr.Fm..MM -0.141  0.240  0.003 -0.356 -0.260  0.119 -0.127  0.046
+            F.M.P. Age    PPD    Hstr.P BtypTh
+Tm.Ldng.t.R                                   
+BOP                                           
+Diabetes                                      
+Smoking                                       
+GBR.Sns.GrA                                   
+T..I.S.SLA.                                   
+Bruxism                                       
+Fll.Mth.P.S                                   
+Age          0.000                            
+PPD         -0.015 -0.085                     
+Hstry.Prdnt  0.121 -0.139 -0.290              
+BiotypeThin  0.154 -0.069 -0.008  0.146       
+Gndr.Fm..MM -0.009 -0.230  0.104  0.162  0.174
+> lmer.rbl.pr<-lmer(RBL.Placement.to.Review~Time.Placement.to.Review+Time.Placement.to.Loading+BOP+Diabetes+Smoking+GBR.Sinus.Graft+Type.of.Implant.Surface.SLActive.vs.SLA+Bruxism+Full.Mouth.Plaque.Score+Age+PPD+History.Periodontitis+Biotype+Gender.Female.vs.Male+ (1|NAME),data=mca, REML=F)
+> summary(lmer.rbl.pr)
+Linear mixed model fit by maximum likelihood t-tests use Satterthwaite
+  approximations to degrees of freedom [merModLmerTest]
+Formula: 
+RBL.Placement.to.Review ~ Time.Placement.to.Review + Time.Placement.to.Loading +  
+    BOP + Diabetes + Smoking + GBR.Sinus.Graft + Type.of.Implant.Surface.SLActive.vs.SLA +  
+    Bruxism + Full.Mouth.Plaque.Score + Age + PPD + History.Periodontitis +  
+    Biotype + Gender.Female.vs.Male + (1 | NAME)
+   Data: mca
+
+     AIC      BIC   logLik deviance df.resid 
+    33.6     85.5      0.2     -0.4      139 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-2.5044 -0.5008 -0.1262  0.4351  3.3795 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ NAME     (Intercept) 0.02013  0.1419  
+ Residual             0.04197  0.2049  
+Number of obs: 156, groups:  NAME, 87
+
+Fixed effects:
+                                                  Estimate Std. Error
+(Intercept)                                      7.990e-01  1.628e-01
+Time.Placement.to.Review                        -7.204e-02  2.001e-02
+Time.Placement.to.Loading                        1.232e-01  5.645e-02
+BOP                                              3.862e-03  5.928e-02
+Diabetes                                        -5.475e-02  9.752e-02
+Smoking                                          3.167e-02  1.062e-01
+GBR.Sinus.GraftAugmentation                     -3.841e-02  5.161e-02
+Type.of.Implant.Surface.SLActive.vs.SLASLActive -1.792e-01  1.626e-01
+Bruxism                                          2.737e-02  6.554e-02
+Full.Mouth.Plaque.Score                         -5.777e-04  6.429e-04
+Age                                             -2.779e-03  2.082e-03
+PPD                                             -4.636e-02  2.608e-02
+History.Periodontitis                           -3.183e-02  5.193e-02
+BiotypeThin                                     -6.907e-02  6.378e-02
+Gender.Female.vs.MaleMale                        6.598e-02  5.557e-02
+                                                        df t value
+(Intercept)                                      1.027e+02   4.908
+Time.Placement.to.Review                         1.230e+02  -3.600
+Time.Placement.to.Loading                        1.542e+02   2.182
+BOP                                              8.949e+01   0.065
+Diabetes                                         1.026e+02  -0.561
+Smoking                                          6.560e+01   0.298
+GBR.Sinus.GraftAugmentation                      8.958e+01  -0.744
+Type.of.Implant.Surface.SLActive.vs.SLASLActive  8.986e+01  -1.102
+Bruxism                                          7.926e+01   0.418
+Full.Mouth.Plaque.Score                          1.195e+02  -0.899
+Age                                              8.300e+01  -1.335
+PPD                                              8.741e+01  -1.778
+History.Periodontitis                            8.395e+01  -0.613
+BiotypeThin                                      9.213e+01  -1.083
+Gender.Female.vs.MaleMale                        9.341e+01   1.187
+                                                Pr(>|t|)    
+(Intercept)                                     3.48e-06 ***
+Time.Placement.to.Review                         0.00046 ***
+Time.Placement.to.Loading                        0.03060 *  
+BOP                                              0.94820    
+Diabetes                                         0.57569    
+Smoking                                          0.76651    
+GBR.Sinus.GraftAugmentation                      0.45870    
+Type.of.Implant.Surface.SLActive.vs.SLASLActive  0.27342    
+Bruxism                                          0.67737    
+Full.Mouth.Plaque.Score                          0.37064    
+Age                                              0.18561    
+PPD                                              0.07891 .  
+History.Periodontitis                            0.54161    
+BiotypeThin                                      0.28166    
+Gender.Female.vs.MaleMale                        0.23813    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) T.P..R T.P..L BOP    Diabts Smokng GBR.S. T..I.S
+Tm.Plcmn..R -0.563                                                 
+Tm.Plcmn..L  0.008 -0.159                                          
+BOP         -0.092  0.109 -0.032                                   
+Diabetes     0.083 -0.083  0.096 -0.095                            
+Smoking     -0.038 -0.045  0.122 -0.056  0.149                     
+GBR.Sns.GrA -0.285  0.275 -0.182  0.075  0.051 -0.064              
+T..I.S.SLA. -0.018 -0.019 -0.367  0.046  0.060 -0.001  0.087       
+Bruxism     -0.043 -0.089  0.088  0.156 -0.089  0.079 -0.242 -0.141
+Fll.Mth.P.S -0.217  0.123 -0.011 -0.165 -0.046  0.092  0.055 -0.046
+Age         -0.584 -0.030 -0.054 -0.016 -0.002  0.106 -0.095  0.130
+PPD         -0.425  0.117 -0.037 -0.061 -0.076 -0.093  0.111 -0.013
+Hstry.Prdnt  0.033  0.064 -0.060 -0.045 -0.055 -0.101  0.156 -0.021
+BiotypeThin -0.009 -0.061 -0.058 -0.233 -0.081  0.064 -0.059 -0.124
+Gndr.Fm..MM -0.140  0.173 -0.177 -0.011 -0.360 -0.240  0.080 -0.064
+            Bruxsm F.M.P. Age    PPD    Hstr.P BtypTh
+Tm.Plcmn..R                                          
+Tm.Plcmn..L                                          
+BOP                                                  
+Diabetes                                             
+Smoking                                              
+GBR.Sns.GrA                                          
+T..I.S.SLA.                                          
+Bruxism                                              
+Fll.Mth.P.S -0.166                                   
+Age          0.096  0.025                            
+PPD         -0.036 -0.055 -0.078                     
+Hstry.Prdnt -0.029  0.095 -0.195 -0.281              
+BiotypeThin -0.024  0.128 -0.067 -0.005  0.154       
+Gndr.Fm..MM  0.062  0.002 -0.116  0.080  0.078  0.167
+> vif(lmer.rbl.pr)
+Error in UseMethod("determinant") : 
+  no applicable method for 'determinant' applied to an object of class "c('dpoMatrix', 'dsyMatrix', 'ddenseMatrix', 'symmetricMatrix', 'dMatrix', 'denseMatrix', 'compMatrix', 'Matrix', 'xMatrix', 'mMatrix')"
+In addition: Warning message:
+In vif.default(lmer.rbl.pr) : No intercept: vifs may not be sensible.
+> lm.pr<-lm(RBL.Placement.to.Review~Time.Placement.to.Review+Time.Placement.to.Loading+BOP+Diabetes+Smoking+GBR.Sinus.Graft+Type.of.Implant.Surface.SLActive.vs.SLA+Bruxism+Full.Mouth.Plaque.Score+Age+PPD+History.Periodontitis+Biotype+Gender.Female.vs.Male,data=mca)
+> vif(lm.pr)
+               Time.Placement.to.Review 
+                               1.195560 
+              Time.Placement.to.Loading 
+                               1.369414 
+                                    BOP 
+                               1.227535 
+                               Diabetes 
+                               1.213023 
+                                Smoking 
+                               1.189456 
+                        GBR.Sinus.Graft 
+                               1.296517 
+Type.of.Implant.Surface.SLActive.vs.SLA 
+                               1.325959 
+                                Bruxism 
+                               1.177271 
+                Full.Mouth.Plaque.Score 
+                               1.126271 
+                                    Age 
+                               1.132807 
+                                    PPD 
+                               1.205123 
+                  History.Periodontitis 
+                               1.276338 
+                                Biotype 
+                               1.205806 
+                  Gender.Female.vs.Male 
+                               1.410591 
+> 
